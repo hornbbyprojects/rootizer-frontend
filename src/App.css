@@ -1,5 +1,10 @@
 .App {
+    justify-content: center;
+    display: grid;
+}
+.Middleman {
   text-align: center;
+  width: 400px;
 }
 
 .App-logo {
