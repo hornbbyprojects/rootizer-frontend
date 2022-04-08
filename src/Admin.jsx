@@ -9,33 +9,27 @@ import $ from "jquery";
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 function App({
-    game, setGame, playerCount, setPlayerCount, players, setPlayers, host, setHost
+    game,
+    setGame,
+    playerCount,
+    setPlayerCount,
+    players,
+    setPlayers,
+    host,
+    setHost,
+    getLatest,
+    port,
+    setPort,
+    backend
 }) {
 
     function newGame() {
-        let url = `${host}/new-game?players=${players}`;
+        let url = backend.getUrl(`new-game?players=${players})`);
         $.post(url, null, (data) => {
             setGame(data["game_number"]);
             console.log(`New game ${JSON.stringify(data)}`);
         }, "json");
     }
-     const getLatest = useCallback(() => {
-        console.log("Getting latest game");
-        let url = `${host}/latest-game`;
-        $.get(url, function(data) {
-            console.log("Got latest game");
-            setGame(data["game_number"]);
-            setPlayerCount(data["players"].length);
-            setPlayers(data["players"]);
-        }, "json").fail((error) => {
-            console.log("Failed to get latest game");
-        });
-    }, [host, setPlayers, setPlayerCount, setGame]);
-
-    useEffect(() => {
-        getLatest();
-    }, [getLatest]);
-
     return (
         <div className="App">
             <div className="Middleman">
@@ -53,6 +47,10 @@ function App({
                         <Row>
                             <label htmlFor="hostInput">Host</label>
                             <input id="hostInput" type="text" onChange={(event) => setHost(event.target.value)} value={host} />
+                        </Row>
+                        <Row>
+                            <label htmlFor="portInput">Port</label>
+                            <input id="portInput" type="text" onChange={(event) => setPort(event.target.value)} value={port} />
                         </Row>
                         <Row>
                             <label htmlFor="gameInput">Game number</label>
