@@ -6,7 +6,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 function getCurrentTimeEpoch() {
     return Math.floor(new Date().getTime() / 1000);
 }
-function Turns({ backend, turns, currentPlayer, lastTime, game }) {
+function Turns({ backend, turns, currentPlayer, lastTime, game, averages }) {
     const [currentTime, setCurrentTime] = useState(getCurrentTimeEpoch());
     function submitTime() {
         let url = backend.getUrl(`submit?game=${game}`);
@@ -15,6 +15,7 @@ function Turns({ backend, turns, currentPlayer, lastTime, game }) {
         }, "json");
     }
     let turnElements = [];
+    let averagesElements = [];
 
     useEffect(() => {
         setInterval(
@@ -25,17 +26,23 @@ function Turns({ backend, turns, currentPlayer, lastTime, game }) {
         );
     }, []);
 
-    if(turns !== null) {
+    if (turns !== null) {
         for (let turnIndex = turns.length - 1; turnIndex >= 0; turnIndex--) {
             let turn = turns[turnIndex];
             turnElements.push(<ListGroup.Item key={turnIndex}>{turn[0]}: {turn[1]}</ListGroup.Item>);
+        }
+    }
+    if (averages !== null) {
+        for (let player in averages) {
+            let time = averages[player];
+            averagesElements.push(<ListGroup.Item key={player}>{player}: {time}</ListGroup.Item>);
         }
     }
     console.log("Last time " + lastTime);
     console.log("new  time " + currentTime);
     return <div>
         <div>
-          Current player: {currentPlayer}
+            Current player: {currentPlayer}
         </div>
         <div>
             Time taken: {currentTime - lastTime}
@@ -43,9 +50,15 @@ function Turns({ backend, turns, currentPlayer, lastTime, game }) {
         <Button className="btn btn-light" onClick={() => submitTime()}>
             End turn
         </Button>
-        <ListGroup>
-            {turnElements}
-        </ListGroup>
+        <div className="turns">
+            <ListGroup>
+                {averagesElements}
+            </ListGroup>
+            <ListGroup>
+                {turnElements}
+            </ListGroup>
+        </div>
+
     </div>;
 }
 export default Turns;

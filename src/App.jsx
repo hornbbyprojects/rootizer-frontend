@@ -21,6 +21,7 @@ function App() {
     const [port, setPort] = useState("8080");
     const [turns, setTurns] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState("loading...");
+    const [averages, setAverages] = useState(null);
 
     const [backend, setBackend] = useState(null);
 
@@ -41,6 +42,7 @@ function App() {
             setTurns(data["turns"]);
             setCurrentPlayer(data["current_player"]);
             setLastTime(data["last_time"]);
+            setAverages(data["averages"]);
         });
     }, [backend, game, setTurns, setCurrentPlayer, setLastTime]);
 
@@ -57,7 +59,7 @@ function App() {
     }, [host, port]);
 
     useEffect(() => {
-        if(backend !== null) {
+        if (backend !== null) {
             getLatest();
         }
     }, [getLatest, backend]);
@@ -105,8 +107,9 @@ function App() {
             game={game}
             turns={turns}
             lastTime={lastTime}
+            averages={averages}
             currentPlayer={currentPlayer}
-            setCurrentPlayer={setCurrentPlayer}
+
         />;
     return (
         <BrowserRouter>
