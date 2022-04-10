@@ -17,11 +17,12 @@ function App() {
     const [playerCount, setPlayerCount] = useState(null);
     const [players, setPlayers] = useState([]);
     const [host, setHost] = useState("192.168.0.139");
+    const [lastTime, setLastTime] = useState(0);
     const [port, setPort] = useState("8080");
     const [turns, setTurns] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState("loading...");
 
-    const backend = new Backend(host, port);
+    const [backend, setBackend] = useState(null);
 
     const getLatest = useCallback(() => {
         console.log("Getting latest game");
@@ -29,53 +30,57 @@ function App() {
         $.get(url, function(data) {
             console.log("Got latest game");
             setGame(data["game_number"]);
-            setPlayerCount(data["players"].length);
-            setPlayers(data["players"]);
         }, "json").fail((_error) => {
             console.log("Failed to get latest game");
         });
-    }, [host, setPlayers, setPlayerCount, setGame]);
+    }, [backend, setGame]);
 
-    let fetchTurns = useCallback(() => {
-        let url = backend.getUrl(`all-turns?game=${game}`);
+    let fetchData = useCallback(() => {
+        let url = backend.getUrl(`game-data?game=${game}`);
         $.getJSON(url, function(data) {
-            if(data == null) {
-                console.log("bummer");
-            }
-            console.log(`Turns data ${data}`);
-            setTurns(data);
+            setTurns(data["turns"]);
+            setCurrentPlayer(data["current_player"]);
+            setLastTime(data["last_time"]);
         });
-    }, [host, game]);
+    }, [backend, game, setTurns, setCurrentPlayer, setLastTime]);
 
-    let fetchCurrentPlayer = useCallback(() => {
-        let url = backend.getUrl(`current-player?game=${game}`);
+    let fetchPlayers = useCallback(() => {
+        let url = backend.getUrl(`players?game=${game}`);
         $.getJSON(url, function(data) {
-            setCurrentPlayer(data);
+            setPlayers(data);
+            setPlayerCount(data.length);
         });
-    }, [host, game]);
+    }, [backend, game]);
 
     useEffect(() => {
-        getLatest();
-    }, [getLatest]);
+        setBackend(new Backend(host, port));
+    }, [host, port]);
+
+    useEffect(() => {
+        if(backend !== null) {
+            getLatest();
+        }
+    }, [getLatest, backend]);
+
+    useEffect(() => {
+        if (backend !== null && game !== null) {
+            fetchPlayers();
+        }
+    }, [backend, game]);
+
 
 
     const {
         sendMessage,
         lastMessage,
         readyState
-    } = useWebSocket(`ws://${host}:9090?game=${game}`);
-
-    if(readyState == 3) { //Closed
-        
-    }
+    } = useWebSocket(host && game && `ws://${host}:9090?game=${game}`);
 
     useEffect(() => {
-        console.log(`last message ${lastMessage}`);
-        if(game != null) {
-            fetchTurns();
-            fetchCurrentPlayer();
+        if (game !== null && backend !== null) {
+            fetchData();
         }
-    }, [fetchTurns, fetchCurrentPlayer, lastMessage]);
+    }, [game, backend, fetchData, lastMessage]);
 
     let adminElement =
         <Admin
@@ -99,6 +104,7 @@ function App() {
             backend={backend}
             game={game}
             turns={turns}
+            lastTime={lastTime}
             currentPlayer={currentPlayer}
             setCurrentPlayer={setCurrentPlayer}
         />;
