@@ -24,7 +24,7 @@ function App({
 }) {
 
     function newGame() {
-        let url = backend.getUrl(`new-game?players=${players})`);
+        let url = backend.getUrl(`new-game?players=${players}`);
         $.post(url, null, (data) => {
             setGame(data["game_number"]);
             console.log(`New game ${JSON.stringify(data)}`);
