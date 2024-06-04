@@ -29,13 +29,13 @@ function Turns({ backend, turns, currentPlayer, lastTime, game, averages }) {
     if (turns !== null) {
         for (let turnIndex = turns.length - 1; turnIndex >= 0; turnIndex--) {
             let turn = turns[turnIndex];
-            turnElements.push(<ListGroup.Item key={turnIndex}>{turn[0]}: {turn[1]}</ListGroup.Item>);
+            turnElements.push(<ListGroup.Item className="turnItem" key={turnIndex}>{turn[0]}: {turn[1]}</ListGroup.Item>);
         }
     }
     if (averages !== null) {
         for (let player in averages) {
             let time = averages[player];
-            averagesElements.push(<ListGroup.Item key={player}>{player}: {time}</ListGroup.Item>);
+            averagesElements.push(<ListGroup.Item className="turnItem" key={player}>{player}: {time}</ListGroup.Item>);
         }
     }
     console.log("Last time " + lastTime);
@@ -51,9 +51,11 @@ function Turns({ backend, turns, currentPlayer, lastTime, game, averages }) {
             End turn
         </Button>
         <div className="turns">
-            <ListGroup>
+            Averages:
+            <ListGroup className="averages">
                 {averagesElements}
             </ListGroup>
+            Recent turns:
             <ListGroup>
                 {turnElements}
             </ListGroup>

@@ -30,7 +30,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
 }
 
 @keyframes App-logo-spin {
@@ -43,5 +43,20 @@
 }
 
 .turns {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.averages {
+    grid-column: 1 / 1;
+    grid-row: 2 / 2;
+}
+
+.list-group {
+    margin: 10px;
+    width: 90%;
+}
+
+.turnItem {
+    width: 100%;
 }

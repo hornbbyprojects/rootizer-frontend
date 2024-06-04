@@ -42,7 +42,7 @@ function App({
                                 let newPlayers = event.target.value.split(",");
                                 setPlayers(newPlayers);
                                 setPlayerCount(newPlayers.length);
-                            }} value={players.join(",")} />
+                            }} value={players ? players.join(",") : ""} />
                         </Row>
                         <Row>
                             <label htmlFor="hostInput">Host</label>

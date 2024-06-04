@@ -9,16 +9,17 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import useWebSocket from 'react-use-websocket';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import ListGroup from 'react-bootstrap/ListGroup';
 import { Backend } from "./backend";
+import { useSession } from "./session";
+
 
 function App() {
-    const [game, setGame] = useState(null);
+    const [game, setGame] = useSession("game", null);
     const [playerCount, setPlayerCount] = useState(null);
     const [players, setPlayers] = useState([]);
-    const [host, setHost] = useState("192.168.0.139");
+    const [host, setHost] = useSession("host", "192.168.0.139");
     const [lastTime, setLastTime] = useState(0);
-    const [port, setPort] = useState("8080");
+    const [port, setPort] = useSession("port", "8080");
     const [turns, setTurns] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState("loading...");
     const [averages, setAverages] = useState(null);
@@ -37,12 +38,14 @@ function App() {
     }, [backend, setGame]);
 
     let fetchData = useCallback(() => {
+        console.log("Fetching game data");
         let url = backend.getUrl(`game-data?game=${game}`);
         $.getJSON(url, function(data) {
             setTurns(data["turns"]);
             setCurrentPlayer(data["current_player"]);
             setLastTime(data["last_time"]);
             setAverages(data["averages"]);
+            console.log("Fetched game data");
         });
     }, [backend, game, setTurns, setCurrentPlayer, setLastTime]);
 
